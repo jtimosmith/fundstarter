@@ -1,25 +1,32 @@
-var fs = require('fs')
-var ptcl = require('http')
+var http = require('http');
+var fs = require('fs');
 var port = process.env.PORT || 8080;
-var buffer = new Buffer(2048);
-var server = ptcl.createServer(find);
-
-var find = function(callback){
-	fs.open("index.html", 'r+', 
-		function(err, fd){
-			if(err){
-				return callback(err)
-			}
-			fs.read(fd, buffer, 0, buffer.length, 0, null,
-				function(err, bytes, buffer){
-					var webdata = buffer.toString('utf8');
-					response.writeHeader(256, {'Type' : 'text/html'});
-					response.write(webdata);
-					response.end();
-				}
-			)
+var requestlistener = function(request, response)
+{
+	fs.stat('index.html', function(error, stats)
+	{
+		if(error)
+		{
+			return console.log(error);
 		}
-	)
-}
+		fs.open('index.html', 'r', function(error, fd)
+		{
+			if(error){
+				return console.log(error)
+		}
+		var bufferSize = stats.size;
+		var buffer = new Buffer(bufferSize);
 
+		fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer)
+		{
+			var data = buffer.toString('utf8');
+			response.writeHeader(200, {'Content-Type': 'text/html'});
+			response.write(data);
+			response.end();
+		});
+	});
+});
+};
+
+var server = http.createServer(requestlistener);
 server.listen(port);
