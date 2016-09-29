@@ -1,22 +1,32 @@
-var express = require('express')
-var app = express()
+var http = require('http');
+var fs = require('fs');
+var port = process.env.PORT || 8080;
+var requestlistener = function(request, response)
+{
+	fs.stat('index.html', function(error, stats)
+	{
+		if(error)
+		{
+			return console.log(error);
+		}
+		fs.open('index.html', 'r', function(error, fd)
+		{
+			if(error){
+				return console.log(error)
+		}
+		var bufferSize = stats.size;
+		var buffer = new Buffer(bufferSize);
 
+		fs.read(fd, buffer, 0, buffer.length, null, function(error, bytesRead, buffer)
+		{
+			var data = buffer.toString('utf8');
+			response.writeHeader(200, {'Content-Type': 'text/html'});
+			response.write(data);
+			response.end();
+		});
+	});
+});
+};
 
-app.set('port', (process.env.PORT || 8080))
-//app.use(express.static(__dirname + '/public'))
-
-//__dirname returns the directory that the currently executing script is in.
-
-app.get('/', function(request, response) {
-    response.sendFile('public/index.html',{root:__dirname})
-
-/* sends an entire HTTP response to the client,                                                                                                                                     
- including headers and content,                                                                                                                                                     
- which is why you can only call once*/
-
-
-})
-
-app.listen(app.get('port'), function() {
-  console.log("Node app is running at :" + app.get('port'))
-})
+var server = http.createServer(requestListener);
+Server.listen(port);
