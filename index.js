@@ -50,9 +50,9 @@ function find(callback){
 					}
 					callback(null, buffer.slice(0, bytes));
 				}
-			)
+			);
 		}
-	)
+	);
 }
 
 
