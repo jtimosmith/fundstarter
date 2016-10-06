@@ -20,7 +20,7 @@ var port = Number(process.env.PORT || 8080);
 
 var fundstarter = http.createServer(function(request, response){
 	response.writeHead(200, {"Content-type": "text/html"});
-	fs.readFile('index.html', 'utf8', function(error, data){
+	fs.readFile('public/index.html', 'utf8', function(error, data){
 		if(error){
 			throw error;
 		}
@@ -39,11 +39,11 @@ var buffer = new Buffer(2048);
 
 var find = function(request, response){
 	response.writeHead(200, {"Content-type": "text/html"});
-	fs.exists('index.html', function(exist){
+	fs.exists('public/index.html', function(exist){
 		if(exist){
-			fs.stat('index.html', 
+			fs.stat('public/index.html', 
 				function(error, stats){
-					fs.open('index.html', 'r', 
+					fs.open('public/index.html', 'r', 
 						function(error, fd){
 							var buffer = new Buffer(stats.size);
 							fs.read(fd ,buffer, 0, buffer.length, 0, 
